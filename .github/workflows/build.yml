@@ -24,17 +24,18 @@ jobs:
           distribution: 'zulu'
           java-version: '17'
 
-      - name: Unzip Project Files
+      - name: Unzip and Fix Paths
         run: |
-          unzip -o fruit-ninja-auto-bot.zip -d ./project
-          cp -r ./project/* . || true
-          rm -rf node_modules package-lock.json
+          unzip -o fruit-ninja-auto-bot.zip -d ./extracted
+          # نقل كل الملفات من المجلد الفرعي للمسار الرئيسي وتنظيف الحزم التالفة
+          cp -r ./extracted/*/* . || cp -r ./extracted/* . || true
+          rm -rf node_modules package-lock.json extracted
 
       - name: Install Dependencies Fresh
         run: |
-          npm install --force --platform=linux --arch=x64
+          npm install --force
 
-      - name: Build Web App & Capacitor Sync
+      - name: Build Web App & Sync
         run: |
           npx vite build
           npx cap add android || true
@@ -51,3 +52,4 @@ jobs:
         with:
           name: fruit-ninja-bot-apk
           path: android/app/build/outputs/apk/debug/app-debug.apk
+          
