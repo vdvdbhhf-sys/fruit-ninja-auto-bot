@@ -28,11 +28,11 @@ jobs:
         run: |
           unzip -o fruit-ninja-auto-bot.zip -d ./project
           cp -r ./project/* . || true
+          rm -rf node_modules package-lock.json
 
       - name: Install Dependencies
         run: |
-          rm -rf node_modules package-lock.json
-          npm install --force
+          npm install --platform=linux --arch=x64
 
       - name: Build Web App & Capacitor Sync
         run: |
