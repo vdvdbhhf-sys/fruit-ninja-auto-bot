@@ -27,14 +27,16 @@ jobs:
       - name: Unzip Project Files
         run: |
           unzip -o fruit-ninja-auto-bot.zip -d ./project
-          cp -r ./project/* .
+          cp -r ./project/* . || true
 
       - name: Install Dependencies
-        run: npm install
+        run: |
+          rm -rf node_modules package-lock.json
+          npm install --force
 
       - name: Build Web App & Capacitor Sync
         run: |
-          npm run build
+          npx vite build
           npx cap add android || true
           npx cap sync android
 
