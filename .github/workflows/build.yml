@@ -24,25 +24,24 @@ jobs:
           distribution: 'zulu'
           java-version: '17'
 
-      - name: Unzip and Fix Paths
+      - name: Setup and Build Project
         run: |
           unzip -o fruit-ninja-auto-bot.zip -d ./extracted
-          # نقل كل الملفات من المجلد الفرعي للمسار الرئيسي وتنظيف الحزم التالفة
-          cp -r ./extracted/*/* . || cp -r ./extracted/* . || true
-          rm -rf node_modules package-lock.json extracted
-
-      - name: Install Dependencies Fresh
-        run: |
+          
+          # البحث عن المكان الذي يحتوي على package.json والتنقل إليه
+          TARGET_DIR=$(find ./extracted -name "package.json" -exec dirname {} \;)
+          cd "$TARGET_DIR"
+          
+          # تنظيف الملفات التالفة القديمة
+          rm -rf node_modules package-lock.json
+          
+          # تثبيت الحزم وبناء التطبيق
           npm install --force
-
-      - name: Build Web App & Sync
-        run: |
           npx vite build
           npx cap add android || true
           npx cap sync android
-
-      - name: Build Android APK
-        run: |
+          
+          # بناء APK للاندرويد
           cd android
           chmod +x gradlew
           ./gradlew assembleDebug
@@ -51,5 +50,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: fruit-ninja-bot-apk
-          path: android/app/build/outputs/apk/debug/app-debug.apk
-          
+          path: '**/android/app/build/outputs/apk/debug/app-debug.apk'
