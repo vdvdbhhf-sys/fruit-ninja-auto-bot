@@ -28,20 +28,19 @@ jobs:
         run: |
           unzip -o fruit-ninja-auto-bot.zip -d ./extracted
           
-          # البحث عن المكان الذي يحتوي على package.json والتنقل إليه
+          # البحث عن مجلد المشروع وإزالة node_modules من كل مكان نهائياً
           TARGET_DIR=$(find ./extracted -name "package.json" -exec dirname {} \;)
+          find . -name "node_modules" -type d -exec rm -rf {} +
+          find . -name "package-lock.json" -type f -delete
+          
+          # التثبيت والبناء داخل مجلد المشروع المكتشف
           cd "$TARGET_DIR"
-          
-          # تنظيف الملفات التالفة القديمة
-          rm -rf node_modules package-lock.json
-          
-          # تثبيت الحزم وبناء التطبيق
           npm install --force
           npx vite build
           npx cap add android || true
           npx cap sync android
           
-          # بناء APK للاندرويد
+          # بناء APK
           cd android
           chmod +x gradlew
           ./gradlew assembleDebug
