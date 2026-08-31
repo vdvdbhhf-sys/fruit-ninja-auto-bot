@@ -30,9 +30,9 @@ jobs:
           cp -r ./project/* . || true
           rm -rf node_modules package-lock.json
 
-      - name: Install Dependencies
+      - name: Install Dependencies Fresh
         run: |
-          npm install --platform=linux --arch=x64
+          npm install --force --platform=linux --arch=x64
 
       - name: Build Web App & Capacitor Sync
         run: |
