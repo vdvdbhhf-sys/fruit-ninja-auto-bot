@@ -13,10 +13,10 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v1
         with:
-          node-version: 18
+          bun-version: latest
 
       - name: Set up Java JDK
         uses: actions/setup-java@v4
@@ -24,23 +24,17 @@ jobs:
           distribution: 'zulu'
           java-version: '17'
 
-      - name: Setup and Build Project
+      - name: Unzip, Install and Build
         run: |
           unzip -o fruit-ninja-auto-bot.zip -d ./extracted
-          
-          # البحث عن مجلد المشروع وإزالة node_modules من كل مكان نهائياً
           TARGET_DIR=$(find ./extracted -name "package.json" -exec dirname {} \;)
-          find . -name "node_modules" -type d -exec rm -rf {} +
-          find . -name "package-lock.json" -type f -delete
-          
-          # التثبيت والبناء داخل مجلد المشروع المكتشف
           cd "$TARGET_DIR"
-          npm install --force
-          npx vite build
-          npx cap add android || true
-          npx cap sync android
           
-          # بناء APK
+          bun install
+          bunx vite build
+          bunx cap add android || true
+          bunx cap sync android
+          
           cd android
           chmod +x gradlew
           ./gradlew assembleDebug
