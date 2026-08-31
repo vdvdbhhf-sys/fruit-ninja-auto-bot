@@ -24,17 +24,25 @@ jobs:
           distribution: 'zulu'
           java-version: '17'
 
-      - name: Unzip, Install and Build
+      - name: Unzip, Init Capacitor and Build
         run: |
           unzip -o fruit-ninja-auto-bot.zip -d ./extracted
           TARGET_DIR=$(find ./extracted -name "package.json" -exec dirname {} \;)
           cd "$TARGET_DIR"
           
+          # تثبيت الحزم وإضافة منصة الاندرويد من الصفر
           bun install
+          bun add @capacitor/core @capacitor/android @capacitor/cli
+          
+          # تهيئة Capacitor تلقائياً
+          bunx @capacitor/cli init "Fruit Ninja Bot" "com.fruitninja.bot" --web-dir "dist" || true
+          
+          # بناء الويب وإنشاء مجلد الاندرويد
           bunx vite build
-          bunx @capacitor/cli add android || true
+          bunx @capacitor/cli add android
           bunx @capacitor/cli sync android
           
+          # بناء الـ APK
           cd android
           chmod +x gradlew
           ./gradlew assembleDebug
