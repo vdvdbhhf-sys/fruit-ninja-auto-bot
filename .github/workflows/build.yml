@@ -32,8 +32,8 @@ jobs:
           
           bun install
           bunx vite build
-          bunx cap add android || true
-          bunx cap sync android
+          bunx @capacitor/cli add android || true
+          bunx @capacitor/cli sync android
           
           cd android
           chmod +x gradlew
